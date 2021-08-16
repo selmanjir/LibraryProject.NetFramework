@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -36,7 +36,7 @@ namespace LibraryProject.NetFramework
         private void actionsList ()
         {
             connect.Open();
-            SqlDataAdapter adapter = new SqlDataAdapter("select ActionId,BookId,UserId,EmployeeId,ReceiveDate,ReturnDate from Actions", connect);
+            SqlDataAdapter adapter = new SqlDataAdapter("select ActionId AS 'İşlem Numarası',Books.BookName AS 'Kitap Adı',Users.UserName as 'Kullanıcı Adı',Employees.EmployeeName as 'Personel Adı',ReceiveDate,ReturnDate from Actions inner join Books on Actions.BookId = Books.BookId  inner join Users on Users.UserId  = Actions.UserId inner join Employees on Actions.EmployeeId = Employees.EmployeeId order by ActionId asc ", connect);
             adapter.Fill(daset,"Actions");
             dataGridView1.DataSource = daset.Tables["Actions"];
             connect.Close();
@@ -46,7 +46,7 @@ namespace LibraryProject.NetFramework
         {
             connect.Open();
             SqlCommand command = new SqlCommand("insert into Actions(BookId,UserId,EmployeeId,ReceiveDate,ReturnDate) values(@BookId,@UserId,@EmployeeId,@ReceiveDate,@ReturnDate)", connect);
-            command.Parameters.AddWithValue("@BookId", txtBookName.Text);
+            command.Parameters.AddWithValue("@BookId", comboBookId.Text);
             command.Parameters.AddWithValue("@UserId", txtUserName.Text);
             command.Parameters.AddWithValue("@EmployeeId", txtEmployee.Text);
             command.Parameters.AddWithValue("@ReceiveDate", dateTimePicker1.Value);
@@ -72,10 +72,28 @@ namespace LibraryProject.NetFramework
 
         private void ToLendfrm_Load(object sender, EventArgs e)
         {
+            connect.Open();
+            SqlCommand command = new SqlCommand("select BookId from Books where BookStatus = 'true' ", connect);
+            SqlDataReader read = command.ExecuteReader();
+            while (read.Read())
+            {
+                comboBookId.Items.Add(read["BookId"]);
+            }
+            connect.Close();
             actionsList();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void txtBookName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBookId_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
